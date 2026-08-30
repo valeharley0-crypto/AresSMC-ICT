@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARES SMC / ICT — Formation Trading Professionnelle</title>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #05080f;
+  --panel: #0a101a;
+  --panel2: #0e1624;
+  --panel3: #121c2e;
+  --border: #1a2a40;
+  --border-light: #243550;
+  --teal: #2dd4bf;
+  --teal-dim: rgba(45,212,191,0.12);
+  --teal-glow: rgba(45,212,191,0.35);
+  --cyan: #22d3ee;
+  --gold: #f5b942;
+  --gold-dim: rgba(245,185,66,0.12);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,0.12);
+  --text: #e8edf4;
+  --muted: #7a90a8;
+  --success: #10b981;
+  --sidebar-w: 280px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; outline: none; }
+img { max-width: 100%; display: block; }
+
+/* ========== NAVBAR ========== */
+.navbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px;
+  background: rgba(10,16,26,0.92);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+  gap: 12px;
+}
+.brand {
+  display: flex; align-items: center; gap: 12px;
+  font-weight: 800; letter-spacing: 0.4px; font-size: 1.05rem;
+}
+.brand .logo {
+  width: 38px; height: 38px; border-radius: 11px;
+  background: linear-gradient(135deg, #2dd4bf 0%, #22d3ee 50%, #f5b942 100%);
+  display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+  box-shadow: 0 0 18px var(--teal-glow);
+}
+.navbtns { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.btn {
+  padding: 9px 15px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--panel2); color: var(--text); font-size: 0.875rem; font-weight: 600;
+  transition: all 0.2s ease;
+}
+.btn:hover { border-color: var(--teal); background: var(--panel3); transform: translateY(-1px); }
+.btn-primary {
+  background: linear-gradient(135deg, #2dd4bf, #14b8a6);
+  color: #04211d; border: none;
+  box-shadow: 0 4px 14px var(--teal-glow);
+}
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-outline-gold { border: 1px solid var(--gold); color: var(--gold); background: transparent; }
+.btn-outline-gold:hover { background: var(--gold-dim); }
+.btn-ghost { background: transparent; border-color: transparent; color: var(--muted); }
+.btn-ghost:hover { color: var(--text); background: var(--panel2); }
+
+/* ========== HERO (Homepage only) ========== */
+.hero {
+  position: relative;
+  min-height: 420px;
+  background:
+    linear-gradient(180deg, rgba(5,8,15,0.4) 0%, rgba(5,8,15,0.78) 50%, rgba(5,8,15,0.96) 100%),
+    radial-gradient(ellipse 90% 60% at 50% 0%, rgba(45,212,191,0.15) 0%, transparent 55%);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+.hero-inner {
+  position: relative; z-index: 2;
+  padding: 80px 24px 60px;
+  text-align: center;
+  max-width: 720px; margin: 0 auto;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 20px;
+  background: rgba(45,212,191,0.1); border: 1px solid rgba(45,212,191,0.28);
+  color: var(--teal); font-size: 0.78rem; font-weight: 600; margin-bottom: 20px;
+}
+.hero h1 {
+  font-size: clamp(2rem, 5.5vw, 2.85rem);
+  letter-spacing: -0.6px;
+  background: linear-gradient(105deg, #2dd4bf 0%, #22d3ee 42%, #f5b942 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  font-weight: 800; line-height: 1.12; margin-bottom: 14px;
+}
+.hero p { color: var(--muted); font-size: 1.05rem; max-width: 520px; margin: 0 auto 28px; line-height: 1.6; }
+.hero-stats { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; }
+.hero-stat { text-align: center; }
+.hero-stat .num { font-size: 1.4rem; font-weight: 800; color: var(--teal); }
+.hero-stat .lbl { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+
+/* ========== AUTH CONTAINER ========== */
+.auth-container { max-width: 480px; margin: 0 auto; padding: 32px 18px 80px; }
+
+.tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+.tab {
+  flex: 1; text-align: center; padding: 13px 12px; border-radius: 12px;
+  background: var(--panel2); border: 1px solid var(--border);
+  font-weight: 700; font-size: 0.9rem; color: var(--muted); cursor: pointer;
+  transition: all 0.2s;
+}
+.tab:hover { border-color: var(--border-light); color: var(--text); }
+.tab.active {
+  background: linear-gradient(135deg, #2dd4bf, #14b8a6);
+  color: #04211d; border: none;
+  box-shadow: 0 4px 14px var(--teal-glow);
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 26px;
+  margin-bottom: 16px;
+}
+.card.success { background: rgba(45,212,191,0.06); border-color: rgba(45,212,191,0.3); }
+.card-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 6px; }
+.card-sub { color: var(--muted); font-size: 0.88rem; margin-bottom: 20px; }
+
+label { font-size: 0.8rem; color: var(--muted); display: block; margin-bottom: 6px; font-weight: 500; }
+input, select, textarea {
+  width: 100%; padding: 12px 14px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--panel2);
+  color: var(--text); font-size: 0.95rem; margin-bottom: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none; border-color: var(--teal);
+  box-shadow: 0 0 0 3px var(--teal-dim);
+}
+input::placeholder { color: #4a5f78; }
+
+.code-display {
+  font-size: 1.85rem; letter-spacing: 3px; color: var(--gold); font-weight: 800;
+  text-align: center; margin: 12px 0; font-family: monospace;
+}
+.pass-display {
+  font-size: 1.3rem; color: var(--teal); font-weight: 700; text-align: center; margin-bottom: 12px;
+  font-family: monospace;
+}
+.warn {
+  background: var(--gold-dim); border: 1px solid rgba(245,185,66,0.35);
+  padding: 14px; border-radius: 10px; font-size: 0.85rem; color: var(--gold); margin-top: 12px;
+  line-height: 1.5;
+}
+.hidden { display: none !important; }
+
+/* ========== APP LAYOUT (after login) ========== */
+.app-layout {
+  display: flex;
+  min-height: calc(100vh - 62px);
+}
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  padding: 20px 0;
+  overflow-y: auto;
+  position: sticky;
+  top: 62px;
+  height: calc(100vh - 62px);
+  flex-shrink: 0;
+}
+.sidebar-title {
+  padding: 0 18px 14px;
+  font-size: 0.72rem; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.6px;
+}
+.sidebar-cat {
+  padding: 10px 18px;
+  font-size: 0.8rem; font-weight: 700; color: var(--gold);
+  margin-top: 8px;
+}
+.sidebar-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 18px;
+  font-size: 0.88rem; color: var(--muted);
+  cursor: pointer; transition: all 0.15s;
+  border-left: 3px solid transparent;
+}
+.sidebar-item:hover { background: var(--panel2); color: var(--text); }
+.sidebar-item.active {
+  background: var(--teal-dim);
+  color: var(--teal);
+  border-left-color: var(--teal);
+  font-weight: 600;
+}
+.sidebar-item .lock-icon { font-size: 0.85rem; margin-left: auto; }
+.sidebar-item .free-tag {
+  font-size: 0.65rem; padding: 2px 7px; border-radius: 6px;
+  background: var(--teal-dim); color: var(--teal); font-weight: 700; margin-left: auto;
+}
+
+.main-content {
+  flex: 1;
+  padding: 28px 28px 80px;
+  max-width: 860px;
+  overflow-y: auto;
+}
+.main-header {
+  margin-bottom: 24px;
+}
+.main-header h2 {
+  font-size: 1.45rem; font-weight: 800; margin-bottom: 6px;
+}
+.main-header p { color: var(--muted); font-size: 0.9rem; }
+
+/* ========== LESSON CONTENT ========== */
+.lesson-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 20px;
+}
+.lesson-card h3 {
+  font-size: 1.25rem; font-weight: 700; margin-bottom: 18px;
+  color: var(--text);
+  display: flex; align-items: center; gap: 10px;
+}
+.lesson-card h4 {
+  color: var(--teal);
+  font-size: 1.05rem;
+  margin: 22px 0 10px;
+  font-weight: 700;
+}
+.lesson-card h4:first-of-type { margin-top: 0; }
+.lesson-card p {
+  color: #b8c8d8;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+.lesson-card ul, .lesson-card ol {
+  color: #b8c8d8;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin: 8px 0 14px 22px;
+}
+.lesson-card li { margin-bottom: 6px; }
+.lesson-img {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin: 16px 0;
+  background: var(--panel3);
+}
+.note-box {
+  background: rgba(45,212,191,0.08);
+  border-left: 3px solid var(--teal);
+  padding: 14px 16px;
+  border-radius: 0 10px 10px 0;
+  margin: 16px 0;
+  font-size: 0.9rem;
+  color: #a8d4cc;
+  line-height: 1.6;
+}
+.warning-box {
+  background: var(--gold-dim);
+  border-left: 3px solid var(--gold);
+  padding: 14px 16px;
+  border-radius: 0 10px 10px 0;
+  margin: 16px 0;
+  font-size: 0.9rem;
+  color: #e8d4a0;
+  line-height: 1.6;
+}
+.quiz-box {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  margin-top: 24px;
+}
+.quiz-box b { color: var(--gold); display: block; margin-bottom: 10px; font-size: 0.95rem; }
+.quiz-box p { color: var(--muted); font-size: 0.9rem; margin-bottom: 6px; }
+
+.locked-overlay {
+  text-align: center;
+  padding: 50px 24px;
+  color: var(--muted);
+}
+.locked-overlay .lock-big { font-size: 2.8rem; margin-bottom: 14px; }
+.locked-overlay h3 { color: var(--text); margin-bottom: 10px; font-size: 1.2rem; }
+.locked-overlay p { margin-bottom: 20px; font-size: 0.95rem; max-width: 360px; margin-left: auto; margin-right: auto; }
+
+/* ========== MODAL ========== */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.78);
+  backdrop-filter: blur(8px); z-index: 200;
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.modal {
+  background: var(--panel); border: 1px solid rgba(245,185,66,0.4);
+  border-radius: 18px; padding: 28px; max-width: 420px; width: 100%;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+}
+.modal h3 { color: var(--gold); margin-bottom: 16px; font-size: 1.25rem; }
+.price-box {
+  text-align: center; font-size: 1.7rem; color: var(--gold); font-weight: 800;
+  margin: 14px 0; letter-spacing: -0.5px;
+}
+.mvola-num {
+  background: var(--panel2); border: 1px dashed rgba(45,212,191,0.5);
+  padding: 14px; border-radius: 12px; text-align: center;
+  font-size: 1.15rem; color: var(--teal); margin-bottom: 14px; font-weight: 700;
+  letter-spacing: 1px;
+}
+.receipt-status {
+  padding: 6px 12px; border-radius: 8px; font-size: 0.78rem; font-weight: 700;
+  display: inline-block; margin-top: 8px;
+}
+.status-pending { background: var(--gold-dim); color: var(--gold); }
+.status-approved { background: var(--teal-dim); color: var(--teal); }
+.status-rejected { background: var(--red-dim); color: var(--red); }
+
+/* ========== CHAT ========== */
+.chat-box {
+  background: var(--panel2); border: 1px solid var(--border); border-radius: 14px;
+  height: 380px; overflow-y: auto; padding: 16px; margin-bottom: 12px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.msg {
+  max-width: 78%; padding: 10px 14px; border-radius: 14px; font-size: 0.88rem;
+  line-height: 1.45;
+}
+.msg.mine {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #2dd4bf, #14b8a6);
+  color: #04211d; border-bottom-right-radius: 4px;
+}
+.msg.other {
+  align-self: flex-start; background: var(--panel);
+  border: 1px solid var(--border); border-bottom-left-radius: 4px;
+}
+.msg .author { font-size: 0.7rem; opacity: 0.7; margin-bottom: 3px; display: block; font-weight: 600; }
+.chat-input-row { display: flex; gap: 8px; }
+.chat-input-row input { margin-bottom: 0; }
+
+/* ========== ADMIN ========== */
+.admin-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+}
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+th, td { padding: 11px 10px; border-bottom: 1px solid var(--border); text-align: left; }
+th { color: var(--muted); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.4px; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+.small-btn {
+  padding: 6px 12px; border-radius: 8px; font-size: 0.76rem; font-weight: 700;
+  margin-right: 4px;
+}
+.approve-btn { background: var(--teal); color: #04211d; }
+.reject-btn { background: var(--red); color: #fff; }
+.badge-pill { padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; }
+.badge-free { background: rgba(122,144,168,0.15); color: var(--muted); }
+.badge-avance { background: var(--teal-dim); color: var(--teal); }
+.badge-full { background: var(--gold-dim); color: var(--gold); }
+
+.empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 0.9rem; }
+.footer-note {
+  text-align: center; color: var(--muted); font-size: 0.75rem;
+  margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--border);
+}
+
+/* Mobile sidebar toggle */
+.sidebar-toggle {
+  display: none;
+  padding: 8px 12px; border-radius: 8px;
+  background: var(--panel2); border: 1px solid var(--border);
+  color: var(--text); font-size: 0.85rem; font-weight: 600;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 860px) {
+  .sidebar {
+    position: fixed; left: -100%; top: 62px; z-index: 90;
+    transition: left 0.25s ease;
+    box-shadow: 8px 0 30px rgba(0,0,0,0.4);
+  }
+  .sidebar.open { left: 0; }
+  .sidebar-toggle { display: inline-flex; }
+  .main-content { padding: 20px 16px 70px; }
+  .hero-inner { padding: 60px 16px 44px; }
+}
+
+@media (max-width: 500px) {
+  .hero h1 { font-size: 1.7rem; }
+  .hero-stats { gap: 20px; }
+  .auth-container { padding: 24px 14px 60px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ NAVBAR ============ -->
+<div class="navbar">
+  <div class="brand">
+    <div class="logo">💠</div>
+    ARES SMC / ICT
+  </div>
+  <div class="navbtns">
+    <!-- Visible only when logged in -->
+    <button class="btn btn-ghost hidden" id="navFormation" onclick="showAppView('lessons')">Formation</button>
+    <button class="btn btn-ghost hidden" id="navChat" onclick="showAppView('chat')">Chat</button>
+    <!-- Public -->
+    <button class="btn" id="navConnexion" onclick="showAuthTab('connexion')">Connexion</button>
+    <button class="btn btn-primary" id="navJoin" onclick="showAuthTab('inscription')">Inscription</button>
+    <button class="btn hidden" id="navLogout" onclick="logout()">Déconnexion</button>
+  </div>
+</div>
+
+<!-- ============ HOMEPAGE (not logged in) ============ -->
+<div id="view-home">
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">✦ Formation Professionnelle SMC / ICT</div>
+      <h1>Maîtrisez le Trading<br>avec Smart Money & ICT</h1>
+      <p>De débutant à trader structuré. Apprenez les concepts institutionnels, la liquidité, les Order Blocks, FVG, OTE et bien plus.</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="num">19+</div><div class="lbl">Chapitres</div></div>
+        <div class="hero-stat"><div class="num">2</div><div class="lbl">Niveaux</div></div>
+        <div class="hero-stat"><div class="num">ICT</div><div class="lbl">Concepts</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-container">
+    <div class="tabs">
+      <div class="tab active" id="tabInscription" onclick="showAuthTab('inscription')">Inscription gratuite</div>
+      <div class="tab" id="tabConnexion" onclick="showAuthTab('connexion')">Connexion</div>
+    </div>
+
+    <!-- Inscription -->
+    <div id="form-inscription" class="card">
+      <div class="card-title">Créer mon compte</div>
+      <div class="card-sub">Recevez immédiatement votre code d’accès unique</div>
+      <label>Nom complet</label>
+      <input type="text" id="regName" placeholder="Votre nom complet">
+      <label>Email</label>
+      <input type="email" id="regEmail" placeholder="votre@email.com">
+      <label>Niveau actuel</label>
+      <select id="regLevel">
+        <option value="debutant">Débutant</option>
+        <option value="avance">Avancé</option>
+      </select>
+      <button class="btn btn-primary" style="width:100%;padding:14px;font-size:0.95rem;" onclick="registerUser()">Créer mon compte</button>
+
+      <div id="regResult" class="card success hidden" style="margin-top:18px;">
+        <p style="text-align:center;color:var(--teal);font-weight:700;font-size:1.05rem;">✓ Compte créé avec succès</p>
+        <p style="text-align:center;color:var(--muted);margin-top:12px;font-size:0.85rem;">Votre code d’accès</p>
+        <div class="code-display" id="genCode"></div>
+        <p style="text-align:center;color:var(--muted);font-size:0.85rem;">Votre mot de passe</p>
+        <div class="pass-display" id="genPass"></div>
+        <div class="warn">⚠️ Notez soigneusement votre code et votre mot de passe. Ils vous serviront pour vous connecter et pour le paiement.</div>
+        <button class="btn btn-primary" style="width:100%;margin-top:14px;" onclick="showAuthTab('connexion')">Aller à la connexion →</button>
+      </div>
+    </div>
+
+    <!-- Connexion -->
+    <div id="form-connexion" class="card hidden">
+      <div class="card-title">Connexion</div>
+      <div class="card-sub">Entrez votre code d’accès et mot de passe</div>
+      <label>Code d’accès</label>
+      <input type="text" id="loginCode" placeholder="SMC-XXXX" style="text-transform:uppercase;">
+      <label>Mot de passe</label>
+      <input type="password" id="loginPass" placeholder="Votre mot de passe">
+      <button class="btn btn-primary" style="width:100%;padding:14px;" onclick="loginUser()">Se connecter</button>
+      <p id="loginError" style="color:var(--red);margin-top:12px;font-size:0.85rem;"></p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ APP (after login) ============ -->
+<div id="view-app" class="hidden">
+  <div class="app-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-title">Navigation</div>
+      <div class="sidebar-cat">🟢 Débutant</div>
+      <div id="sidebar-debutant"></div>
+      <div class="sidebar-cat">🥈 Avancé — SMC / ICT</div>
+      <div id="sidebar-avance"></div>
+      <div class="sidebar-cat">🥇 Analyse</div>
+      <div id="sidebar-analyse"></div>
+      <div class="sidebar-cat">🥇 Stratégie</div>
+      <div id="sidebar-strategie"></div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main-content">
+      <button class="sidebar-toggle" onclick="toggleSidebar()">☰ Chapitres</button>
+
+      <!-- Lessons view -->
+      <div id="app-lessons">
+        <div class="main-header">
+          <h2 id="mainLessonTitle">Sélectionnez un chapitre</h2>
+          <p id="mainLessonDesc">Choisissez un chapitre dans le menu de gauche pour commencer.</p>
+        </div>
+        <div id="lessonContent">
+          <div class="empty-state">← Sélectionnez un chapitre dans la barre latérale</div>
+        </div>
+      </div>
+
+      <!-- Chat view -->
+      <div id="app-chat" class="hidden">
+        <div class="main-header">
+          <h2>💬 Chat communautaire</h2>
+          <p>Échangez avec les autres membres de la formation.</p>
+        </div>
+        <div class="chat-box" id="chatBox">
+          <div class="empty-state">Chargement...</div>
+        </div>
+        <div class="chat-input-row">
+          <input type="text" id="chatInput" placeholder="Écrivez un message...">
+          <button class="btn btn-primary" onclick="sendChatMessage()">Envoyer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ADMIN (hidden access) ============ -->
+<div id="view-admin" class="hidden">
+  <div class="auth-container" style="max-width:900px;padding-top:40px;">
+    <div class="card" id="adminLoginCard">
+      <div class="card-title">🔐 Accès Administrateur</div>
+      <div class="card-sub">Réservé à l’administrateur — clé d’accès manokana</div>
+      <label>Mot de passe admin</label>
+      <input type="password" id="adminPass" placeholder="Mot de passe administrateur">
+      <button class="btn btn-outline-gold" style="width:100%;padding:14px;" onclick="adminLogin()">Se connecter</button>
+    </div>
+
+    <div id="adminPanel" class="hidden">
+      <div class="admin-header">
+        <h2 style="font-size:1.3rem;font-weight:800;">Panneau Admin</h2>
+        <button class="btn btn-ghost" onclick="loadAdminData()">↻ Actualiser</button>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-bottom:14px;font-size:1rem;">📩 Reçus de paiement</h3>
+        <div style="overflow-x:auto;">
+          <table id="receiptsTable">
+            <thead>
+              <tr><th>Membre</th><th>Code</th><th>Pack</th><th>Reçu</th><th>Statut</th><th>Action</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-bottom:14px;font-size:1rem;">👥 Membres inscrits</h3>
+        <div style="overflow-x:auto;">
+          <table id="usersTable">
+            <thead>
+              <tr><th>Nom</th><th>Code</th><th>Niveau</th><th>Accès</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-bottom:14px;font-size:1rem;">⚙️ Paramètres</h3>
+        <label>Numéro Mvola (affiché aux membres)</label>
+        <input type="text" id="settingMvola" placeholder="03X XX XXX XX">
+        <label>Lien WhatsApp support</label>
+        <input type="text" id="settingWhatsapp" placeholder="https://wa.me/261XXXXXXXXX">
+        <label>Prix Accès Avancé (Ar)</label>
+        <input type="text" id="settingPriceAvance" placeholder="10000">
+        <label>Prix Accès Complet (Ar)</label>
+        <input type="text" id="settingPriceFull" placeholder="20000">
+        <button class="btn btn-primary" onclick="saveSettings()">Enregistrer les paramètres</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL PAIEMENT ============ -->
+<div id="paymentModal" class="modal-overlay hidden">
+  <div class="modal">
+    <h3>🔒 Accès requis</h3>
+    <p style="color:var(--muted);font-size:0.9rem;margin-bottom:16px;">Ce contenu est réservé aux membres ayant un accès payant.</p>
+    <label>Choisissez votre pack</label>
+    <select id="packChoice" onchange="updatePackPrice()">
+      <option value="avance">Accès Avancé — Débutant + Avancé (SMC/ICT)</option>
+      <option value="full">Accès Complet — + Analyse + Stratégie</option>
+    </select>
+    <div class="price-box" id="modalPrice">10 000 Ar</div>
+    <p style="color:var(--muted);font-size:0.85rem;margin-bottom:10px;">Envoyez le montant via Mvola au numéro :</p>
+    <div class="mvola-num" id="modalMvolaNum">03X XX XXX XX</div>
+    <label>Capture du reçu Mvola</label>
+    <input type="file" id="receiptFile" accept="image/*">
+    <p style="font-size:0.75rem;color:var(--muted);margin:-8px 0 12px;">Photo légère uniquement (max ~900 Ko).</p>
+    <button class="btn btn-primary" style="width:100%;padding:13px;" onclick="uploadReceipt()">Envoyer le reçu</button>
+    <p id="uploadStatus" style="margin-top:10px;font-size:0.85rem;"></p>
+    <p style="margin-top:14px;font-size:0.8rem;color:var(--muted);">
+      Besoin d’aide ? <a id="modalWhatsapp" href="#" target="_blank" style="color:var(--teal);">Support WhatsApp</a>
+    </p>
+    <button class="btn" style="width:100%;margin-top:12px;" onclick="closeModal()">Fermer</button>
+  </div>
+</div>
+
+<p class="footer-note">© 2026 ARES SMC / ICT — Formation Trading Professionnelle</p>
+
+<script>
+/* ============================================================
+   CONFIG FIREBASE — Remplacez par vos vraies clés
+   ============================================================ */
+const firebaseConfig = {
+  apiKey: "AIzaSyA2HRh3eaPqkC7Z4c7xzxrl7xiyAFgwrGg",
+  authDomain: "smc-ict-formation.firebaseapp.com",
+  projectId: "smc-ict-formation",
+  storageBucket: "smc-ict-formation.firebasestorage.app",
+  messagingSenderId: "128399699052",
+  appId: "1:128399699052:web:95c903a306b339a993bc49",
+  measurementId: "G-G0040TQS2J"
+};
+let db = null;
+try {
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
+} catch(e) {
+  console.warn("Firebase non configuré (mode démo).");
+}
+
+/* Mot de passe admin — changez-le */
+const ADMIN_PASSWORD = "ares2026admin";
+
+/* ============================================================
+   ÉTAT
+   ============================================================ */
+let currentUser = null;
+let currentSettings = {
+  mvola: "03X XX XXX XX",
+  whatsapp: "https://wa.me/261000000000",
+  priceAvance: "10000",
+  priceFull: "20000"
+};
+let currentLessonId = null;
+
+/* ============================================================
+   LEÇONS COMPLÈTES + ICT
+   ============================================================ */
+const lessons = [
+  /* ========== DÉBUTANT ========== */
+  {
+    id: 1, level: "debutant", free: true,
+    title: "Chapitre 1 : Qu’est-ce que le Trading ?",
+    html: `
+      <h4>1.1 Définition claire</h4>
+      <p>Le trading consiste à acheter et vendre un actif financier (devise, or, indices, crypto) dans le but de réaliser un profit grâce à la variation de son prix. Contrairement à l’investissement long terme, le trading se concentre sur des mouvements de prix à court ou moyen terme.</p>
+      
+      <h4>1.2 Les principaux marchés</h4>
+      <ul>
+        <li><b>Forex</b> : marché des devises (EUR/USD, GBP/USD…). Le plus liquide au monde.</li>
+        <li><b>Or (XAUUSD)</b> : valeur refuge très suivie par les traders SMC/ICT.</li>
+        <li><b>Indices</b> : S&P 500, NASDAQ, DAX…</li>
+        <li><b>Crypto-monnaies</b> : Bitcoin, Ethereum (plus volatils).</li>
+      </ul>
+      <img class="lesson-img" src="https://placehold.co/800x320/0a101a/2dd4bf?text=Marches+-+Forex+%7C+Or+%7C+Indices+%7C+Crypto" alt="Les marchés">
+
+      <h4>1.3 Les acteurs du marché</h4>
+      <p>Le marché n’est pas un « ennemi ». Il est composé de :</p>
+      <ul>
+        <li><b>Retail traders</b> (particuliers comme vous)</li>
+        <li><b>Brokers</b> (intermédiaires)</li>
+        <li><b>Smart Money</b> : banques, hedge funds, institutions. Ce sont eux qui déplacent réellement le prix.</li>
+      </ul>
+      <div class="note-box">💡 En SMC/ICT, on apprend à lire les intentions de la Smart Money plutôt que de suivre les indicateurs classiques.</div>
+
+      <h4>1.4 Comment commencer concrètement</h4>
+      <ol>
+        <li>Choisir un broker régulé (spread bas, retraits fiables).</li>
+        <li>Ouvrir un compte démo et pratiquer 1 à 3 mois minimum.</li>
+        <li>Passer en réel uniquement quand votre plan est solide et votre psychologie stable.</li>
+      </ol>
+      <p>Plateformes les plus utilisées : <b>MetaTrader 5 (MT5)</b> et <b>cTrader</b>.</p>
+
+      <div class="quiz-box">
+        <b>Questions de révision</b>
+        <p>1. Quelle est la différence principale entre le trading et l’investissement long terme ?</p>
+        <p>2. Pourquoi la Smart Money est-elle si importante dans l’approche SMC/ICT ?</p>
+      </div>
+    `
+  },
+  {
+    id: 2, level: "debutant", free: false,
+    title: "Chapitre 2 : Vocabulaire de Base du Trader",
+    html: `
+      <h4>2.1 Le Pip</h4>
+      <p>Le pip (percentage in point) est la plus petite unité de mouvement de prix standardisée. Sur la plupart des paires Forex, 1 pip = 0.0001. Sur l’or (XAUUSD), 1 pip = 0.01.</p>
+      <p>Exemple : si l’or passe de 2650.00 à 2650.50, il a bougé de 50 pips.</p>
+
+      <h4>2.2 Le Lot</h4>
+      <ul>
+        <li><b>1 lot standard</b> = 100 000 unités de la devise de base</li>
+        <li><b>0.1 lot (mini)</b> = 10 000 unités</li>
+        <li><b>0.01 lot (micro)</b> = 1 000 unités</li>
+      </ul>
+      <p>Plus le lot est grand, plus le profit (ou la perte) par pip est important.</p>
+
+      <h4>2.3 Le Levier (Leverage)</h4>
+      <p>Le levier permet de contrôler une position plus grande que votre capital réel. Avec un levier 1:100, 100 $ de marge contrôlent 10 000 $ de position.</p>
+      <div class="warning-box">⚠️ Un levier élevé multiplie les gains… mais aussi les pertes. La majorité des comptes explosent à cause d’un levier mal géré.</div>
+
+      <h4>2.4 Le Spread</h4>
+      <p>C’est la différence entre le prix d’achat (Ask) et le prix de vente (Bid). C’est le coût principal facturé par le broker. Un spread bas est préférable, surtout pour le scalping.</p>
+
+      <h4>2.5 La Marge et le Margin Call</h4>
+      <p>La marge est le montant bloqué par le broker pour ouvrir et maintenir une position. Si vos pertes réduisent trop votre capital libre, vous recevez un <b>margin call</b> (demande de dépôt) ou un <b>stop out</b> (fermeture forcée des positions).</p>
+
+      <img class="lesson-img" src="https://placehold.co/800x340/0a101a/22d3ee?text=Pip+%7C+Lot+%7C+Levier+%7C+Spread+%7C+Marge" alt="Vocabulaire de base">
+
+      <div class="quiz-box">
+        <b>Questions de révision</b>
+        <p>1. Quelle est la différence entre un lot standard et un micro-lot ?</p>
+        <p>2. Pourquoi un levier très élevé est-il dangereux pour un débutant ?</p>
+      </div>
+    `
+  },
+  {
+    id: 3, level: "debutant", free: false,
+    title: "Chapitre 3 : Ouvrir un Compte de Trading",
+    html: `
+      <h4>3.1 Choisir un bon broker</h4>
+      <p>Critères essentiels :</p>
+      <ul>
+        <li>Régulation sérieuse (FCA, ASIC, CySEC…)</li>
+        <li>Spreads compétitifs et transparents</li>
+        <li>Exécution rapide (peu de slippage)</li>
+        <li>Retraits fiables et rapides</li>
+        <li>Support client réactif</li>
+      </ul>
+
+      <h4>3.2 Compte Démo vs Compte Réel</h4>
+      <p>Le compte démo permet de trader avec de l’argent virtuel. Utilisez-le pour :</p>
+      <ul>
+        <li>Tester votre stratégie sans risque</li>
+        <li>Apprendre la plateforme</li>
+        <li>Construire de la discipline</li>
+      </ul>
+      <div class="note-box">💡 Règle d’or : ne passez en réel que lorsque vous êtes rentable de manière constante en démo pendant au moins 1 à 3 mois.</div>
+
+      <h4>3.3 Les Prop Firms</h4>
+      <p>Une Prop Firm (Proprietary Trading Firm) vous permet de trader avec le capital de l’entreprise après avoir réussi un challenge (évaluation). Vous gardez un pourcentage des profits (souvent 70-90 %).</p>
+      <p>Avantage : capital important sans risquer votre propre argent. Inconvénient : règles strictes (drawdown max, objectifs de profit).</p>
+
+      <h4>3.4 Plateformes recommandées</h4>
+      <ul>
+        <li><b>MT5</b> : la plus utilisée, disponible mobile + PC</li>
+        <li><b>cTrader</b> : interface moderne, souvent préférée par les prop firms</li>
+      </ul>
+
+      <img class="lesson-img" src="https://placehold.co/800x320/0a101a/f5b942?text=Demo+%E2%86%92+Reel+%7C+Prop+Firm+%7C+MT5+%2F+cTrader" alt="Compte de trading">
+
+      <div class="quiz-box">
+        <b>Questions de révision</b>
+        <p>1. Pourquoi faut-il absolument pratiquer en démo avant le réel ?</p>
+        <p>2. Qu’est-ce qu’une Prop Firm et quel est son principal avantage ?</p>
+      </div>
+    `
+  },
+  {
+    id: 4, level: "debutant", free: false,
+    title: "Chapitre 4 : Market Structure (Structure de Marché)",
+    html: `
+      <h4>4.1 Qu’est-ce que la structure de marché ?</h4>
+      <p>La structure de marché se lit à travers les sommets (Highs) et les creux (Lows). C’est le langage de base du prix. Tout trader SMC/ICT commence par savoir lire la structure.</p>
+
+      <h4>4.2 Tendance haussière (Bullish)</h4>
+      <p>On a une tendance haussière lorsqu’on observe une succession de :</p>
+      <ul>
+        <li><b>Higher Highs (HH)</b> : sommets de plus en plus hauts</li>
+        <li><b>Higher Lows (HL)</b> : creux de plus en plus hauts</li>
+      </ul>
+      <img class="lesson-img" src="https://placehold.co/800x360/0a101a/2dd4bf?text=Tendance+Haussiere+-+HH+%2B+HL+(Structure+Bullish)" alt="Tendance haussière">
+
+      <h4>4.3 Tendance baissière (Bearish)</h4>
+      <p>Succession de :</p>
+      <ul>
+        <li><b>Lower Highs (LH)</b> : sommets de plus en plus bas</li>
+        <li><b>Lower Lows (LL)</b> : creux de plus en plus bas</li>
+      </ul>
+      <img class="lesson-img" src="https://placehold.co/800x360/0a101a/ef4444?text=Tendance+Baissiere+-+LH+%2B+LL+(Structure+Bearish)" alt="Tendance baissière">
+
+      <h4>4.4 Le Range (consolidation)</h4>
+      <p>Le prix évolue entre un support et une résistance sans direction claire. C’est souvent la phase d’accumulation avant un mouvement directionnel.</p>
+
+      <h4>4.5 Support et Résistance</h4>
+      <p><b>Support</b> : zone où le prix a tendance à rebondir à la hausse.<br>
+      <b>Résistance</b> : zone où le prix a tendance à être rejeté à la baisse.</p>
+      <div class="note-box">💡 En SMC, on ne trace pas seulement des lignes horizontales. On cherche les zones où la Smart Money a laissé des traces (Order Blocks, liquidité…).</div>
+
+      <div class="quiz-box">
+        <b>Questions de révision</b>
+        <p>1. Comment reconnaît-on une tendance haussière sur un graphique ?</p>
+        <p>2. Quelle est la différence entre un support et une résistance ?</p>
+      </div>
+    `
+  },
+  {
+    id: 5, level: "debutant", free: false,
+    title: "Chapitre 5 : Introduction au SMC & ICT",
+    html: `
+      <h4>5.1 Qu’est-ce que le Smart Money Concept (SMC) ?</h4>
+      <p>Le SMC part du principe que les grands acteurs (banques, institutions) déplacent le marché. Au lieu de suivre les indicateurs classiques (RSI, MACD…), on apprend à lire les intentions de ces acteurs à travers le prix lui-même.</p>
+
+      <h4>5.2 Qu’est-ce que l’ICT (Inner Circle Trader) ?</h4>
+      <p>L’ICT est une méthodologie développée par Michael J. Huddleston. Elle approfondit les concepts de liquidité, de structure, d’Order Blocks, de Fair Value Gaps, d’OTE, de sessions horaires, etc. Beaucoup de traders SMC s’appuient fortement sur les enseignements ICT.</p>
+
+      <h4>5.3 La Liquidité</h4>
+      <p>La liquidité représente les ordres en attente (surtout les Stop Loss). La Smart Money a besoin de liquidité pour placer ses grosses positions. Elle « chasse » donc souvent ces zones avant de partir dans la vraie direction.</p>
+      <img class="lesson-img" src="https://placehold.co/800x340/0a101a/f5b942?text=Liquidite+-+Zones+de+Stop+Loss+(Chasse+par+Smart+Money)" alt="Liquidité">
+
+      <h4>5.4 BOS — Break of Structure</h4>
+      <p>Cassure de structure dans le sens de la tendance = continuation probable. Exemple : en tendance haussière, un nouveau Higher High confirme la continuation.</p>
+      <img class="lesson-img" src="https://placehold.co/800x340/0a101a/2dd4bf?text=BOS+-+Break+of+Structure+(Continuation)" alt="BOS">
+
+      <h4>5.5 CHoCH — Change of Character</h4>
+      <p>Cassure de structure dans le sens opposé = possible changement de direction. C’est le premier signal d’un retournement potentiel.</p>
+      <img class="lesson-img" src="https://placehold.co/800x340/0a101a/f5b942?text=CHoCH+-+Change+of+Character+(Possible+Reversal)" alt="CHoCH">
+
+      <div class="note-box">💡 BOS = continuation | CHoCH = possible retournement. Toujours confirmer avec le contexte (liquidité, Order Block, session…).</div>
+
+      <div class="quiz-box">
+        <b>Questions de révision</b>
+        <p>1. Pourquoi les grands acteurs « chassent-ils » la liquidité ?</p>
+        <p>2. Quelle est la différence entre un BOS et un CHoCH ?</p>
+      </div>
+    `
+  },
+  {
+    id: 6, level: "debutant", free: false,
+    title: "Chapitre 6 : Gestion du Risque",
+    html: `
+      <h4>6.1 Pourquoi c’est le plus important</h4>
+      <p>La majorité des traders perdent non pas à cause d’une mauvaise stratégie, mais à cause d’une mauvaise gestion du risque. Même une stratégie gagnante devient perdante si vous risquez trop sur chaque trade.</p>
+
+      <h4>6.2 Stop Loss (SL) et Take Profit (TP)</h4>
+      <ul>
+        <li><b>Stop Loss</b> : niveau où vous acceptez de sortir en perte pour protéger votre capital.</li>
+        <li><b>Take Profit</b> : niveau où vous sécurisez vos gains.</li>
+      </ul>
+      <p>Ne tradez jamais sans Stop Loss.</p>
+
+      <h4>6.3 Risque par trade</h4>
+      <p>Règle d’or : <b>ne jamais risquer plus de 1 à 2 % de votre capital total par trade</b>.</p>
+      <p>Exemple : capital 1 000 000 Ar → risque max 10 000 à 20 000 Ar par trade.</p>
+
+      <h4>6.4 Ratio Risque / Récompense (R:R)</h4>
+      <p>Un ratio 1:2 signifie que vous risquez 1 pour viser 2. Même avec un win rate de 40 %, vous pouvez être rentable si votre R:R est bon.</p>
+      <img class="lesson-img" src="https://placehold.co/800x320/0a101a/2dd4bf?text=Risk+Management+-+1-2%25+par+trade+%7C+Ratio+R%3AR" alt="Gestion du risque">
+
+      <div class="warning-box">⚠️ Le levier élevé + absence de Stop Loss = destruction quasi certaine du compte.</div>
+
+      <div class="quiz-box">
+        <b>Questions de révision</b>
+        <p>1. Pourquoi ne faut-il pas risquer plus de 1-2 % par trade ?</p>
+        <p>2. Pourquoi un trader peut-il être rentable avec un win rate inférieur à 50 % ?</p>
+      </div>
+    `
+  },
+  {
+    id: 7, level: "debutant", free: false,
+    title: "Chapitre 7 : Psychologie du Trading",
+    html: `
+      <h4>7.1 La discipline avant tout</h4>
+      <p>Le trading est 20 % stratégie et 80 % psychologie. Même la meilleure stratégie échoue si vous ne la suivez pas avec discipline.</p>
+
+      <h4>7.2 Les émotions destructrices</h4>
+      <ul>
+        <li><b>Peur</b> : sortir trop tôt ou ne pas entrer</li>
+        <li><b>Avidité</b> : viser trop loin ou overtrader</li>
+        <li><b>Revenge trading</b> : vouloir « se venger » après une perte</li>
+        <li><b>FOMO</b> : peur de rater un mouvement</li>
+      </ul>
+
+      <h4>7.3 Le Journal de trading</h4>
+      <p>Notez chaque trade : raison d’entrée, émotion ressentie, résultat, erreur éventuelle. C’est l’outil le plus puissant pour progresser.</p>
+
+      <h4>7.4 Patience</h4>
+      <p>Attendre les meilleures opportunités (confluence forte) est plus rentable que de trader tous les jours sans plan clair.</p>
+      <img class="lesson-img" src="https://placehold.co/800x300/0a101a/22d3ee?text=Psychologie+-+Discipline+%7C+Journal+%7C+Patience" alt="Psychologie">
+
+      <div class="note-box">💡 Un trader discipliné avec une stratégie moyenne bat un trader émotionnel avec une stratégie excellente.</div>
+
+      <div class="quiz-box">
+        <b>Questions de révision</b>
+        <p>1. Pourquoi tenir un journal de trading est-il important ?</p>
+        <p>2. Citez deux émotions qui détruisent le plus les comptes.</p>
+      </div>
+    `
+  },
+
+  /* ========== AVANCÉ — SMC / ICT ========== */
+  {
+    id: 8, level: "avance", free: false,
+    title: "Chapitre 1 (Avancé) : Order Blocks (Blocs d’Ordres)",
+    html: `
+      <h4>Définition ICT / SMC</h4>
+      <p>Un <b>Order Block (OB)</b> est une zone (souvent une ou plusieurs bougies) où les institutions ont placé un volume important d’ordres. Le prix a tendance à revenir vers cette zone avant de continuer dans la direction du mouvement initial.</p>
+
+      <h4>Order Block haussier (Bullish OB)</h4>
+      <p>C’est généralement la <b>dernière bougie baissière</b> (ou zone baissière) avant un fort mouvement haussier qui casse la structure (BOS / BMS). Lorsque le prix revient sur ce bloc, il y a une forte probabilité de rebond haussier.</p>
+      <img class="lesson-img" src="https://placehold.co/800x380/0a101a/2dd4bf?text=Bullish+Order+Block+-+Derniere+bougie+baissiere+avant+BOS" alt="Bullish Order Block">
+
+      <h4>Order Block baissier (Bearish OB)</h4>
+      <p>C’est la <b>dernière bougie haussière</b> avant un fort mouvement baissier qui casse la structure. Le retour sur ce bloc offre souvent une opportunité de vente.</p>
+      <img class="lesson-img" src="https://placehold.co/800x380/0a101a/ef4444?text=Bearish+Order+Block+-+Derniere+bougie+haussiere+avant+BOS" alt="Bearish Order Block">
+
+      <h4>Règles pratiques ICT</h4>
+      <ul>
+        <li>Préférez les OB qui ont causé un vrai Break of Structure.</li>
+        <li>Un OB non mitigé (pas encore retesté) est plus puissant.</li>
+        <li>Combinez toujours avec la structure HTF et la liquidité.</li>
+      </ul>
+      <div class="note-box">💡 Un vrai Order Block institutionnel n’est généralement pas « cassé » facilement. S’il est violé avec force, le setup est invalidé.</div>
+
+      <div class="quiz-box">
+        <b>Questions de révision</b>
+        <p>1. Qu’est-ce qu’un Order Block selon l’approche ICT/SMC ?</p>
+        <p>2. Comment identifie-t-on un Bullish Order Block ?</p>
+      </div>
+    `
+  },
+  {
+    id: 9, level: "avance", free: false,
+    title: "Chapitre 2 (Avancé) : Liquidité en Profondeur (BSL & SSL)",
+    html: `
+      <h4>Pourquoi la liquidité est au cœur de l’ICT</h4>
+      <p>Le marché Forex est un jeu à somme nulle : pour qu’un acteur achète massivement, il faut des vendeurs (et inversement). La Smart Money a besoin de liquidité pour entrer et sortir de ses positions. Cette liquidité se trouve principalement là où sont placés les Stop Loss des traders retail.</p>
+
+      <h4>Buy Side Liquidity (BSL)</h4>
+      <p>Zones au-dessus des sommets (equal highs, PDH, PWH, HOD…). C’est là que se trouvent les buy stops et les stops des vendeurs. Une fois le BSL pris (raid), le marché a souvent tendance à se retourner à la baisse.</p>
+      <img class="lesson-img" src="https://placehold.co/800x360/0a101a/2dd4bf?text=BSL+-+Buy+Side+Liquidity+(Equal+Highs+%2F+PDH)" alt="BSL">
+
+      <h4>Sell Side Liquidity (SSL)</h4>
+      <p>Zones en-dessous des creux (equal lows, PDL, PWL, LOD…). Une fois le SSL pris, le marché a tendance à se retourner à la hausse.</p>
+      <img class="lesson-img" src="https://placehold.co/800x360/0a101a/ef4444?text=SSL+-+Sell+Side+Liquidity+(Equal+Lows+%2F+PDL)" alt="SSL">
+
+      <h4>Stop Hunt (chasse aux stops)</h4>
+      <p>Mouvement rapide au-dessus ou en-dessous d’une zone de liquidité pour activer les stops, suivi d’un retournement. Très fréquent à l’ouverture de Londres ou de New York, ou lors d’annonces économiques.</p>
+      <div class="warning-box">⚠️ Ne tradez pas le premier balayage de liquidité sans confirmation (structure, Order Block, displacement…).</div>
+
+      <div class="quiz-box">
+        <b>Questions de révision</b>
+        <p>1. Pourquoi la Smart Money a-t-elle besoin de liquidité ?</p>
+        <p>2. Que se passe-t-il généralement après un raid du BSL ou du SSL ?</p>
+      </div>
+    `
+  },
+  {
+    id: 10, level: "avance", free: false,
+    title: "Chapitre 3 (Avancé) : Sessions & Modèle AMD",
+    html: `
+      <h4>Les 3 sessions principales (heure Madagascar ≈ UTC+3)</h4>
+      <ul>
+        <li><b>Asie</b> (environ 03h–09h) : souvent en range / consolidation (20-40 pips sur l’or).</li>
+        <li><b>Londres</b> (environ 10h–13h) : souvent forme le haut ou le bas du jour. Forte expansion.</li>
+        <li><b>New York</b> (environ 15h–18h) : confirme, prolonge ou rétracte le mouvement de Londres.</li>
+      </ul>
+      <img class="lesson-img" src="https://placehold.co/800x340/0a101a/2dd4bf?text=Sessions+-+Asie+%7C+Londres+%7C+New+York+(Killzones)" alt="Sessions">
+
+      <h4>Le modèle AMD (Accumulation – Manipulation – Distribution)</h4>
+      <p>Concept central en ICT :</p>
+      <ol>
+        <li><b>Accumulation</b> : le prix consolide (souvent en Asie). Les institutions accumulent des positions.</li>
+        <li><b>Manipulation</b> : fausse cassure / Stop Hunt pour piéger les retail (souvent à l’ouverture de Londres ou NY).</li>
+        <li><b>Distribution</b> : le prix part dans la vraie direction du jour. Les institutions distribuent / liquident.</li>
+      </ol>
+      <img class="lesson-img" src="https://placehold.co/800x360/0a101a/f5b942?text=AMD+-+Accumulation+%E2%86%92+Manipulation+%E2%86%92+Distribution" alt="AMD">
+
+      <div class="note-box">💡 Comprendre l’AMD permet d’éviter d’être le « liquidité » et d’entrer plutôt dans le sens de la distribution.</div>
+
+      <div class="quiz-box">
+        <b>Questions de révision</b>
+        <p>1. À quel moment se produit généralement la phase de Manipulation ?</p>
+        <p>2. Pourquoi la session asiatique est-elle souvent en range ?</p>
+      </div>
+    `
+  },
+  {
+    id: 11, level: "avance", free: false,
+    title: "Chapitre 4 (Avancé) : Turtle Soup (Fausse Cassure)",
+    html: `
+      <h4>Définition</h4>
+      <p>La <b>Turtle Soup</b> est une configuration de fausse cassure au-dessus ou en-dessous d’une zone de liquidité. Elle permet de neutraliser les stops des traders qui ont placé leurs ordres au-delà des equal highs / equal lows, avant un retournement.</p>
+
+      <h4>Comment la trader (approche ICT)</h4>
+      <ul>
+        <li>Le prix balaie 5 à 20+ pips au-dessus d’un BSL ou en-dessous d’un SSL.</li>
+        <li>Après le balayage, on cherche une entrée dans la direction opposée.</li>
+        <li>Stop Loss généralement au-delà du extreme du balayage (minimum 10 pips selon le timeframe).</li>
+      </ul>
+      <p><b>Raid BSL</b> → setup Turtle Soup Short (vente)<br>
+      <b>Raid SSL</b> → setup Turtle Soup Long (achat)</p>
+      <img class="lesson-img" src="https://placehold.co/800x380/0a101a/ef4444?text=Turtle+Soup+Short+-+Raid+BSL+puis+Reversal" alt="Turtle Soup Short">
+      <img class="lesson-img" src="https://placehold.co/800x380/0a101a/2dd4bf?text=Turtle+Soup+Long+-+Raid+SSL+puis+Reversal" alt="Turtle Soup Long">
+
+      <div class="warning-box">⚠️ La Turtle Soup pure n’est pas toujours suffisante. Cherchez la confluence avec un Order Block, un FVG ou un displacement clair.</div>
+
+      <div class="quiz-box">
+        <b>Questions de révision</b>
+        <p>1. Que signifie un raid du BSL en termes de Turtle Soup ?</p>
+        <p>2. Où place-t-on généralement le Stop Loss sur une Turtle Soup ?</p>
+      </div>
+    `
+  },
+  {
+    id: 12, level: "avance", free: false,
+    title: "Chapitre 5 (Avancé) : SH + BMS + RTO",
+    html: `
+      <h4>La configuration complète</h4>
+      <p>Cette séquence combine trois éléments puissants de l’ICT/SMC :</p>
+      <ol>
+        <li><b>Stop Hunt (SH)</b> : neutralisation de la liquidité</li>
+        <li><b>Break of Market Structure (BMS / BOS)</b> : confirmation du changement ou de la continuation</li>
+        <li><b>Return to Origin / Order Block (RTO)</b> : retour sur le bloc d’ordre pour l’entrée</li>
+      </ol>
+
+      <h4>Étapes détaillées</h4>
+      <p>1. Le prix fait un Stop Hunt (balayage de liquidité).<br>
+      2. Un Break of Structure confirme que le SH n’était pas un simple bruit.<br>
+      3. Le prix revient sur l’Order Block (ou la zone d’origine) → point d’entrée privilégié.</p>
+      <img class="lesson-img" src="https://placehold.co/800x380/0a101a/2dd4bf?text=SH+%2B+BMS+%2B+RTO+(Setup+Haussier)" alt="SH+BMS+RTO haussier">
+      <img class="lesson-img" src="https://placehold.co/800x380/0a101a/ef4444?text=SH+%2B+BMS+%2B+RTO+(Setup+Baissier)" alt="SH+BMS+RTO baissier">
+
+      <h4>Variante SMS + BMS + RTO</h4>
+      <p>Parfois le prix échoue simplement à casser un swing (SMS = Swing Failure / Failure Swing), suivi d’un BMS puis d’un retour sur l’OB.</p>
+
+      <div class="note-box">💡 Cette configuration est l’une des plus robustes car elle combine liquidité + structure + zone institutionnelle.</div>
+
+      <div class="quiz-box">
+        <b>Questions de révision</b>
+        <p>1. Quelles sont les 3 étapes d’une configuration SH + BMS + RTO ?</p>
+        <p>2. Quelle est la différence entre un Stop Hunt et un SMS ?</p>
+      </div>
+    `
+  },
+  {
+    id: 13, level: "avance", free: false,
+    title: "Chapitre 6 (Avancé) : Confluence & Multi-Timeframe",
+    html: `
+      <h4>Pourquoi la confluence est essentielle</h4>
+      <p>Un trader ICT/SMC sérieux n’entre presque jamais sur un seul signal. Il cherche <b>au moins 2 à 3 facteurs de confluence</b> pour augmenter la probabilité et améliorer le ratio risque/récompense.</p>
+
+      <h4>Facteurs de confluence courants</h4>
+      <ul>
+        <li>Structure de l’unité de temps supérieure (HTF)</li>
+        <li>Order Block + FVG + OTE</li>
+        <li>Session (Killzone Londres / New York)</li>
+        <li>Raid de liquidité récent</li>
+        <li>Displacement clair (mouvement impulsif)</li>
+        <li>Annonce économique (contexte de manipulation)</li>
+      </ul>
+      <img class="lesson-img" src="https://placehold.co/800x340/0a101a/22d3ee?text=Multi-Timeframe+-+HTF+Direction+%2B+LTF+Entree" alt="Multi-Timeframe">
+
+      <h4>Exemple de cadres selon le style</h4>
+      <ul>
+        <li><b>Swing</b> : HTF Hebdo / Daily / H4 → entrées H1 / M30 / M15</li>
+        <li><b>Day Trading</b> : HTF Daily / H4 / H1 → entrées M30 / M15 / M5</li>
+        <li><b>Scalping</b> : HTF H1 / M30 → entrées M5 / M1</li>
+      </ul>
+      <div class="note-box">💡 Toujours trader dans le sens de la structure HTF. L’unité inférieure sert uniquement à affiner l’entrée.</div>
+
+      <div class="quiz-box">
+        <b>Questions de révision</b>
+        <p>1. Pourquoi la confluence augmente-t-elle les chances de réussite ?</p>
+        <p>2. Quelles unités de temps utiliser pour du Day Trading selon l’approche ICT ?</p>
+      </div>
+    `
+  },
+  {
+    id: 18, level: "avance", free: false,
+    title: "Chapitre 7 (Avancé) : Optimal Trade Entry (OTE)",
+    html: `
+      <h4>Qu’est-ce que l’OTE en ICT ?</h4>
+      <p>L’<b>Optimal Trade Entry (OTE)</b> est une zone d’entrée privilégiée définie par le retracement Fibonacci entre <b>62 %</b> et <b>79 %</b> d’un mouvement directionnel (swing). Le niveau 70.5 % est souvent considéré comme le « sweet spot ».</p>
+
+      <h4>Comment tracer l’OTE correctement</h4>
+      <ol>
+        <li>Identifier un swing clair (bas → haut pour un setup haussier, haut → bas pour un setup baissier).</li>
+        <li>Appliquer l’outil Fibonacci du point de départ au point d’arrivée du swing.</li>
+        <li>La zone OTE = entre 0.62 et 0.79.</li>
+        <li>Chercher une confluence avec un Order Block ou un FVG dans cette zone.</li>
+      </ol>
+      <img class="lesson-img" src="https://placehold.co/800x380/0a101a/2dd4bf?text=OTE+-+Zone+Fibonacci+62%25+a+79%25+(Sweet+Spot+70.5%25)" alt="Zone OTE">
+
+      <h4>OTE + Order Block + FVG</h4>
+      <p>La puissance de l’OTE augmente considérablement lorsqu’elle coïncide avec :</p>
+      <ul>
+        <li>Un Order Block non mitigé</li>
+        <li>Un Fair Value Gap</li>
+        <li>La structure HTF alignée</li>
+        <li>Une session active (Londres / NY)</li>
+      </ul>
+      <img class="lesson-img" src="https://placehold.co/800x360/0a101a/22d3ee?text=OTE+%2B+Order+Block+%2B+FVG+(Confluence+forte)" alt="OTE + confluence">
+
+      <h4>Règles pratiques</h4>
+      <ul>
+        <li>Entrée préférée dans la zone 62–79 %.</li>
+        <li>Stop Loss généralement au-delà du 100 % du swing ou sous/au-dessus de l’OB.</li>
+        <li>Objectifs : retour au 0 % ou extensions (-0.27 / -0.62).</li>
+      </ul>
+
+      <div class="quiz-box">
+        <b>Questions de révision</b>
+        <p>1. Entre quels niveaux Fibonacci se situe la zone OTE ?</p>
+        <p>2. Pourquoi l’OTE est-il plus puissant avec un Order Block ou un FVG ?</p>
+      </div>
+    `
+  },
+  {
+    id: 19, level: "avance", free: false,
+    title: "Chapitre 8 (Avancé) : Fair Value Gap (FVG / Imbalance)",
+    html: `
+      <h4>Qu’est-ce qu’un Fair Value Gap ?</h4>
+      <p>Un <b>Fair Value Gap (FVG)</b>, aussi appelé Imbalance, est une zone où le prix a bougé si rapidement qu’il a laissé un « vide » entre trois bougies consécutives. Cette zone n’a pas été négociée efficacement et a tendance à être comblée plus tard.</p>
+
+      <h4>Comment identifier un FVG</h4>
+      <ul>
+        <li><b>FVG haussier</b> : le plus bas de la bougie 3 est au-dessus du plus haut de la bougie 1.</li>
+        <li><b>FVG baissier</b> : le plus haut de la bougie 3 est en-dessous du plus bas de la bougie 1.</li>
+      </ul>
+      <img class="lesson-img" src="https://placehold.co/800x380/0a101a/2dd4bf?text=FVG+Haussier+(Bullish+Imbalance)" alt="FVG haussier">
+      <img class="lesson-img" src="https://placehold.co/800x380/0a101a/ef4444?text=FVG+Baissier+(Bearish+Imbalance)" alt="FVG baissier">
+
+      <h4>Pourquoi le prix revient sur le FVG</h4>
+      <p>Les institutions cherchent souvent à « rééquilibrer » le marché. Le prix a tendance à revenir dans la zone FVG pour combler l’inefficience avant de continuer (ou de se retourner selon le contexte).</p>
+
+      <h4>FVG + Confluence ICT</h4>
+      <p>Les meilleurs setups combinent :</p>
+      <ul>
+        <li>FVG + Order Block</li>
+        <li>FVG + OTE (62–79 %)</li>
+        <li>FVG + BOS / CHoCH</li>
+        <li>FVG dans le sens de la structure HTF</li>
+      </ul>
+      <img class="lesson-img" src="https://placehold.co/800x340/0a101a/22d3ee?text=FVG+%2B+OB+%2B+OTE+(Confluence+ICT)" alt="FVG confluence">
+
+      <div class="note-box">💡 Un FVG formé après un displacement clair (mouvement impulsif) et un BOS est particulièrement intéressant.</div>
+
+      <div class="quiz-box">
+        <b>Questions de révision</b>
+        <p>1. Comment reconnaît-on un FVG haussier sur 3 bougies ?</p>
+        <p>2. Pourquoi combine-t-on souvent un FVG avec un Order Block ou un OTE ?</p>
+      </div>
+    `
+  },
+
+  /* ========== ANALYSE ========== */
+  {
+    id: 14, level: "analyse", free: false,
+    title: "Analyse Technique (SMC / ICT)",
+    html: `
+      <h4>Principe fondamental</h4>
+      <p>L’analyse technique en SMC/ICT repose uniquement sur le prix. On n’utilise pas (ou très peu) d’indicateurs lagging. On lit :</p>
+      <ul>
+        <li>La structure de marché (BOS / CHoCH)</li>
+        <li>Les zones de liquidité (BSL / SSL)</li>
+        <li>Les Order Blocks et Fair Value Gaps</li>
+        <li>Les retracements (OTE)</li>
+        <li>Les sessions et le modèle AMD</li>
+      </ul>
+      <img class="lesson-img" src="https://placehold.co/800x340/0a101a/2dd4bf?text=Analyse+Technique+SMC+-+Structure+%2B+Liquidite+%2B+OB+%2B+FVG" alt="Analyse Technique">
+
+      <h4>Multi-Timeframe Analysis</h4>
+      <p>HTF donne la direction et les zones clés. LTF sert uniquement à affiner le timing d’entrée. Ne tradez jamais contre la structure de l’unité supérieure.</p>
+
+      <div class="quiz-box">
+        <b>Question de révision</b>
+        <p>Sur quoi se base principalement l’analyse technique en SMC/ICT ?</p>
+      </div>
+    `
+  },
+  {
+    id: 15, level: "analyse", free: false,
+    title: "Analyse Fondamentale",
+    html: `
+      <h4>Les facteurs qui bougent vraiment le marché</h4>
+      <p>Même un trader purement technique doit connaître le calendrier économique. Les annonces à fort impact créent de la liquidité et des manipulations :</p>
+      <ul>
+        <li>Décisions de taux des banques centrales (FED, BCE…)</li>
+        <li>Inflation (CPI)</li>
+        <li>Emploi (NFP)</li>
+        <li>PIB</li>
+        <li>Tensions géopolitiques (surtout pour l’or)</li>
+      </ul>
+      <img class="lesson-img" src="https://placehold.co/800x320/0a101a/f5b942?text=Analyse+Fondamentale+-+FED+%7C+NFP+%7C+CPI+%7C+Or" alt="Analyse Fondamentale">
+
+      <p>Pour l’or (XAUUSD), la FED, l’inflation américaine et le statut de valeur refuge sont particulièrement importants.</p>
+      <div class="note-box">💡 Les annonces à fort impact sont des moments privilégiés de Stop Hunt et de Manipulation dans le modèle AMD.</div>
+
+      <div class="quiz-box">
+        <b>Questions de révision</b>
+        <p>1. Pourquoi le calendrier économique reste-t-il important même pour un trader technique ?</p>
+        <p>2. Citez deux facteurs fondamentaux qui influencent fortement le prix de l’or.</p>
+      </div>
+    `
+  },
+  {
+    id: 16, level: "analyse", free: false,
+    title: "Analyse Sentimentale",
+    html: `
+      <h4>Le sentiment retail comme liquide</h4>
+      <p>L’analyse sentimentale mesure le positionnement global des traders (majorité acheteuse ou vendeuse). En SMC/ICT, on part souvent du principe que la majorité des retail se trompe — ils sont la liquidité recherchée par la Smart Money.</p>
+      <img class="lesson-img" src="https://placehold.co/800x300/0a101a/ef4444?text=Sentiment+Retail+-+Contrarian+View+(Smart+Money)" alt="Sentiment">
+
+      <p>Un sentiment extrêmement unilatéral (très bullish ou très bearish) peut signaler un retournement probable, surtout s’il coïncide avec une zone de liquidité évidente.</p>
+
+      <div class="quiz-box">
+        <b>Question de révision</b>
+        <p>Pourquoi un sentiment de marché très unilatéral peut-il annoncer un retournement en approche SMC ?</p>
+      </div>
+    `
+  },
+
+  /* ========== STRATÉGIE ========== */
+  {
+    id: 17, level: "strategie", free: false,
+    title: "Stratégie : Tout Mettre Ensemble (ICT Playbook)",
+    html: `
+      <h4>Le framework complet</h4>
+      <p>Voici comment un trader ICT/SMC construit un trade de A à Z :</p>
+      <ol>
+        <li><b>HTF Bias</b> : déterminer la direction sur l’unité supérieure (Daily / H4).</li>
+        <li><b>Zones clés</b> : identifier liquidité, Order Blocks, FVG, OTE sur HTF.</li>
+        <li><b>Attendre la session</b> : privilégier les Killzones (Londres / New York).</li>
+        <li><b>Confirmation LTF</b> : Stop Hunt + BOS/CHoCH + retour sur OB/FVG/OTE.</li>
+        <li><b>Gestion</b> : risque 1 % max, R:R minimum 1:2, partial profits possibles.</li>
+      </ol>
+      <img class="lesson-img" src="https://placehold.co/800x380/0a101a/2dd4bf?text=Playbook+ICT+-+HTF+Bias+%2B+Killzone+%2B+LTF+Confirmation" alt="Stratégie complète">
+
+      <h4>Exemple Swing</h4>
+      <p>HTF Hebdomadaire : Turtle Soup ou SH + BMS. Daily/H4 : confirmation. Entrée finale en H1/M30 sur retour OB + OTE.</p>
+
+      <h4>Exemple Day Trading / Scalping</h4>
+      <p>Focus sur le range asiatique + ouverture de Londres. Chercher les raids de liquidité + displacement + retour sur zone institutionnelle.</p>
+
+      <div class="warning-box">⚠️ Règle d’or : toujours au moins 2 facteurs de confluence. Toujours trader dans le sens de la structure HTF. Toujours protéger le capital.</div>
+
+      <div class="quiz-box">
+        <b>Questions de révision</b>
+        <p>1. Pourquoi combine-t-on toujours une analyse HTF avec une entrée LTF ?</p>
+        <p>2. Quelle est la règle d’or avant d’ouvrir une position en SMC/ICT ?</p>
+      </div>
+    `
+  }
+];
+
+/* ============================================================
+   NAVIGATION & AUTH
+   ============================================================ */
+function showAuthTab(tab) {
+  document.getElementById('tabInscription').classList.toggle('active', tab === 'inscription');
+  document.getElementById('tabConnexion').classList.toggle('active', tab === 'connexion');
+  document.getElementById('form-inscription').classList.toggle('hidden', tab !== 'inscription');
+  document.getElementById('form-connexion').classList.toggle('hidden', tab !== 'connexion');
+  // Scroll to auth if needed
+  document.getElementById('view-home').scrollIntoView({ behavior: 'smooth' });
+}
+
+function showAppView(view) {
+  document.getElementById('app-lessons').classList.toggle('hidden', view !== 'lessons');
+  document.getElementById('app-chat').classList.toggle('hidden', view !== 'chat');
+  if (view === 'chat') loadChat();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+function genCode() {
+  const letters = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+  let s = "";
+  for (let i = 0; i < 4; i++) s += letters[Math.floor(Math.random() * letters.length)];
+  return "SMC-" + s;
+}
+function genPass() {
+  return "smc" + Math.floor(1000 + Math.random() * 9000);
+}
+
+async function registerUser() {
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const level = document.getElementById('regLevel').value;
+  if (!name || !email) { alert("Veuillez remplir tous les champs."); return; }
+
+  const code = genCode();
+  const pass = genPass();
+
+  try {
+    if (db) {
+      await db.collection('users').add({
+        name, email, level, code, password: pass,
+        access: 'free', createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+    document.getElementById('genCode').innerText = code;
+    document.getElementById('genPass').innerText = pass;
+    document.getElementById('regResult').classList.remove('hidden');
+  } catch (e) {
+    // Mode démo : on affiche quand même
+    document.getElementById('genCode').innerText = code;
+    document.getElementById('genPass').innerText = pass;
+    document.getElementById('regResult').classList.remove('hidden');
+    console.warn("Firebase non disponible — mode démo");
+  }
+}
+
+async function loginUser() {
+  const code = document.getElementById('loginCode').value.trim().toUpperCase();
+  const pass = document.getElementById('loginPass').value.trim();
+  if (!code || !pass) {
+    document.getElementById('loginError').innerText = "Remplissez les champs.";
+    return;
+  }
+
+  try {
+    if (db) {
+      const snap = await db.collection('users').where('code', '==', code).where('password', '==', pass).get();
+      if (snap.empty) {
+        document.getElementById('loginError').innerText = "Code ou mot de passe incorrect.";
+        return;
+      }
+      const doc = snap.docs[0];
+      currentUser = { id: doc.id, ...doc.data() };
+    } else {
+      // Mode démo
+      currentUser = { id: 'demo', name: 'Démo', code, access: 'free' };
+    }
+    enterApp();
+  } catch (e) {
+    document.getElementById('loginError').innerText = "Erreur de connexion.";
+    console.error(e);
+  }
+}
+
+function enterApp() {
+  document.getElementById('view-home').classList.add('hidden');
+  document.getElementById('view-app').classList.remove('hidden');
+  document.getElementById('navConnexion').classList.add('hidden');
+  document.getElementById('navJoin').classList.add('hidden');
+  document.getElementById('navLogout').classList.remove('hidden');
+  document.getElementById('navFormation').classList.remove('hidden');
+  document.getElementById('navChat').classList.remove('hidden');
+  document.getElementById('loginError').innerText = "";
+  buildSidebar();
+  showAppView('lessons');
+}
+
+function logout() {
+  currentUser = null;
+  document.getElementById('view-app').classList.add('hidden');
+  document.getElementById('view-home').classList.remove('hidden');
+  document.getElementById('navConnexion').classList.remove('hidden');
+  document.getElementById('navJoin').classList.remove('hidden');
+  document.getElementById('navLogout').classList.add('hidden');
+  document.getElementById('navFormation').classList.add('hidden');
+  document.getElementById('navChat').classList.add('hidden');
+  currentLessonId = null;
+}
+
+/* ============================================================
+   SIDEBAR & LESSONS
+   ============================================================ */
+function isUnlocked(l) {
+  if (l.free) return true;
+  const access = currentUser ? (currentUser.access || 'free') : 'free';
+  if (l.level === 'debutant' || l.level === 'avance') {
+    return access === 'avance' || access === 'full';
+  }
+  return access === 'full';
+}
+
+function buildSidebar() {
+  ['debutant', 'avance', 'analyse', 'strategie'].forEach(level => {
+    const container = document.getElementById('sidebar-' + level);
+    container.innerHTML = '';
+    lessons.filter(l => l.level === level).forEach(l => {
+      const unlocked = isUnlocked(l);
+      const div = document.createElement('div');
+      div.className = 'sidebar-item' + (currentLessonId === l.id ? ' active' : '');
+      div.onclick = () => selectLesson(l.id);
+      div.innerHTML = `
+        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${l.title.replace(/^Chapitre \d+.*?:\s*/, '').substring(0, 32)}${l.title.length > 40 ? '…' : ''}</span>
+        ${l.free ? '<span class="free-tag">GRATUIT</span>' : (unlocked ? '' : '<span class="lock-icon">🔒</span>')}
+      `;
+      container.appendChild(div);
+    });
+  });
+}
+
+function selectLesson(id) {
+  currentLessonId = id;
+  buildSidebar();
+  const l = lessons.find(x => x.id === id);
+  if (!l) return;
+
+  document.getElementById('mainLessonTitle').innerText = l.title;
+  document.getElementById('mainLessonDesc').innerText = l.free ? 'Chapitre gratuit — accessible à tous les membres.' :
+    (isUnlocked(l) ? 'Contenu débloqué — bon apprentissage !' : 'Contenu verrouillé — accès payant requis.');
+
+  const content = document.getElementById('lessonContent');
+  if (isUnlocked(l)) {
+    content.innerHTML = `<div class="lesson-card">${l.html}</div>`;
+  } else {
+    content.innerHTML = `
+      <div class="lesson-card">
+        <div class="locked-overlay">
+          <div class="lock-big">🔒</div>
+          <h3>Contenu verrouillé</h3>
+          <p>Ce chapitre fait partie de l’accès payant. Cliquez ci-dessous pour débloquer.</p>
+          <button class="btn btn-primary" style="padding:12px 24px;" onclick="openPaymentModal()">Débloquer ce contenu</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // Close mobile sidebar
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+/* ============================================================
+   PAIEMENT (prix uniquement au clic sur cadenas)
+   ============================================================ */
+function updatePackPrice() {
+  const pack = document.getElementById('packChoice').value;
+  const price = pack === 'full' ? currentSettings.priceFull : currentSettings.priceAvance;
+  document.getElementById('modalPrice').innerText = Number(price).toLocaleString('fr-FR') + " Ar";
+}
+function openPaymentModal() {
+  if (!currentUser) { alert("Veuillez vous connecter d’abord."); return; }
+  document.getElementById('packChoice').value = 'avance';
+  updatePackPrice();
+  document.getElementById('modalMvolaNum').innerText = currentSettings.mvola;
+  document.getElementById('modalWhatsapp').href = currentSettings.whatsapp;
+  document.getElementById('paymentModal').classList.remove('hidden');
+}
+function closeModal() {
+  document.getElementById('paymentModal').classList.add('hidden');
+}
+
+async function uploadReceipt() {
+  const file = document.getElementById('receiptFile').files[0];
+  const pack = document.getElementById('packChoice').value;
+  if (!file) { alert("Veuillez choisir une image du reçu."); return; }
+
+  // Limite de taille : 900 Ko max (Firestore limite un document à 1 Mo)
+  if (file.size > 900 * 1024) {
+    document.getElementById('uploadStatus').innerText = "Image trop grande (max ~900 Ko). Reprenez une capture plus légère.";
+    return;
+  }
+
+  document.getElementById('uploadStatus').innerText = "Envoi en cours...";
+
+  try {
+    if (db) {
+      // Convertit l'image en texte Base64 pour la stocker directement dans Firestore
+      const base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      await db.collection('receipts').add({
+        userId: currentUser.id,
+        userName: currentUser.name,
+        userCode: currentUser.code,
+        receiptData: base64,
+        pack: pack,
+        status: 'pending',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+    document.getElementById('uploadStatus').innerHTML =
+      '<span class="receipt-status status-pending">Reçu envoyé — en attente de validation</span>';
+  } catch (e) {
+    document.getElementById('uploadStatus').innerText = "Erreur lors de l’envoi (vérifiez Firebase).";
+    console.error(e);
+  }
+}
+
+/* ============================================================
+   CHAT
+   ============================================================ */
+function loadChat() {
+  if (!currentUser) {
+    document.getElementById('chatBox').innerHTML = '<div class="empty-state">Connectez-vous pour accéder au chat</div>';
+    return;
+  }
+  if (!db) {
+    document.getElementById('chatBox').innerHTML = '<div class="empty-state">Chat disponible une fois Firebase configuré</div>';
+    return;
+  }
+  db.collection('chat').orderBy('createdAt', 'asc').limit(100).onSnapshot(snap => {
+    const box = document.getElementById('chatBox');
+    box.innerHTML = "";
+    if (snap.empty) {
+      box.innerHTML = '<div class="empty-state">Aucun message pour le moment. Soyez le premier !</div>';
+      return;
+    }
+    snap.forEach(doc => {
+      const m = doc.data();
+      const mine = currentUser && m.userId === currentUser.id;
+      const div = document.createElement('div');
+      div.className = 'msg ' + (mine ? 'mine' : 'other');
+      div.innerHTML = `<span class="author">${m.userName || 'Membre'}</span>${m.text}`;
+      box.appendChild(div);
+    });
+    box.scrollTop = box.scrollHeight;
+  });
+}
+async function sendChatMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text || !currentUser || !db) return;
+  await db.collection('chat').add({
+    userId: currentUser.id, userName: currentUser.name, text,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  input.value = "";
+}
+
+/* ============================================================
+   ADMIN (accès secret : tapez ?admin dans l’URL ou changez le mot de passe)
+   ============================================================ */
+function adminLogin() {
+  const pass = document.getElementById('adminPass').value;
+  if (pass !== ADMIN_PASSWORD) { alert("Mot de passe incorrect."); return; }
+  document.getElementById('adminLoginCard').classList.add('hidden');
+  document.getElementById('adminPanel').classList.remove('hidden');
+  loadAdminData();
+}
+
+async function loadAdminData() {
+  if (!db) return;
+  // Reçus
+  const receiptsSnap = await db.collection('receipts').orderBy('createdAt', 'desc').get();
+  const rBody = document.querySelector('#receiptsTable tbody');
+  rBody.innerHTML = "";
+  if (receiptsSnap.empty) {
+    rBody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px;">Aucun reçu</td></tr>';
+  } else {
+    receiptsSnap.forEach(doc => {
+      const r = doc.data();
+      const packLabel = r.pack === 'full' ? '🥇 Complet' : '🥈 Avancé';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${r.userName || '—'}</td>
+        <td><code>${r.userCode || '—'}</code></td>
+        <td>${packLabel}</td>
+        <td>${r.receiptData ? `<img src="${r.receiptData}" style="max-width:80px;max-height:80px;border-radius:6px;cursor:pointer;" onclick="window.open(this.src)">` : (r.receiptUrl ? `<a href="${r.receiptUrl}" target="_blank" style="color:var(--teal);">Voir</a>` : '—')}</td>
+        <td><span class="receipt-status status-${r.status}">${r.status}</span></td>
+        <td>
+          ${r.status === 'pending' ? `
+            <button class="small-btn approve-btn" onclick="validateReceipt('${doc.id}','${r.userId}','approved','${r.pack}')">Valider</button>
+            <button class="small-btn reject-btn" onclick="validateReceipt('${doc.id}','${r.userId}','rejected','${r.pack}')">Rejeter</button>
+          ` : '—'}
+        </td>
+      `;
+      rBody.appendChild(tr);
+    });
+  }
+
+  // Membres
+  const usersSnap = await db.collection('users').get();
+  const uBody = document.querySelector('#usersTable tbody');
+  uBody.innerHTML = "";
+  if (usersSnap.empty) {
+    uBody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px;">Aucun membre</td></tr>';
+  } else {
+    usersSnap.forEach(doc => {
+      const u = doc.data();
+      const access = u.access || 'free';
+      const badgeMap = {
+        free: '<span class="badge-pill badge-free">Gratuit</span>',
+        avance: '<span class="badge-pill badge-avance">Avancé</span>',
+        full: '<span class="badge-pill badge-full">Complet</span>'
+      };
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${u.name}</td><td><code>${u.code}</code></td><td>${u.level}</td><td>${badgeMap[access]}</td>`;
+      uBody.appendChild(tr);
+    });
+  }
+
+  // Settings
+  const settingsDoc = await db.collection('settings').doc('main').get();
+  if (settingsDoc.exists) {
+    const s = settingsDoc.data();
+    currentSettings = s;
+    document.getElementById('settingMvola').value = s.mvola || "";
+    document.getElementById('settingWhatsapp').value = s.whatsapp || "";
+    document.getElementById('settingPriceAvance').value = s.priceAvance || "";
+    document.getElementById('settingPriceFull').value = s.priceFull || "";
+  }
+}
+
+async function validateReceipt(receiptId, userId, status, pack) {
+  await db.collection('receipts').doc(receiptId).update({ status });
+  if (status === 'approved') {
+    await db.collection('users').doc(userId).update({ access: pack });
+  }
+  loadAdminData();
+}
+
+async function saveSettings() {
+  const mvola = document.getElementById('settingMvola').value.trim();
+  const whatsapp = document.getElementById('settingWhatsapp').value.trim();
+  const priceAvance = document.getElementById('settingPriceAvance').value.trim();
+  const priceFull = document.getElementById('settingPriceFull').value.trim();
+  await db.collection('settings').doc('main').set({ mvola, whatsapp, priceAvance, priceFull });
+  currentSettings = { mvola, whatsapp, priceAvance, priceFull };
+  alert("Paramètres enregistrés !");
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+async function loadSettingsPublic() {
+  try {
+    if (db) {
+      const settingsDoc = await db.collection('settings').doc('main').get();
+      if (settingsDoc.exists) currentSettings = settingsDoc.data();
+    }
+  } catch (e) { console.log("Paramètres par défaut."); }
+}
+
+// Accès admin secret : ajouter ?admin à l’URL
+if (window.location.search.includes('admin')) {
+  document.getElementById('view-home').classList.add('hidden');
+  document.getElementById('view-app').classList.add('hidden');
+  document.getElementById('view-admin').classList.remove('hidden');
+}
+
+loadSettingsPublic();
+</script>
+</body>
+</html>
